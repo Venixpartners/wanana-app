@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+@theme {
+  --color-midnight: #0B0F13;
+  --color-ink: #12181E;
+  --color-line: #222B33;
+  --color-mist: #8A949C;
+  --color-paper: #F6F4EF;
+  --color-emerald: #0E7C66;
+  --color-emerald-bright: #19A486;
+  --color-orange: #FF6A3D;
+  --color-gold: #F4B942;
+
+  --font-display: "Sora Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    background: var(--color-midnight);
+    color: var(--color-paper);
+    color-scheme: dark;
+  }
+  body {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection {
+    background: var(--color-emerald);
+    color: var(--color-paper);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .field {
+    @apply w-full rounded-lg border border-line bg-ink px-3.5 py-3 text-[15px] text-paper placeholder:text-mist/70 outline-none transition focus:border-emerald-bright;
+  }
+  .label {
+    @apply mb-1.5 block text-sm text-mist;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-emerald px-5 py-3 text-[15px] font-semibold text-paper transition hover:bg-emerald-bright disabled:cursor-not-allowed disabled:opacity-60;
+  }
+  .btn-quiet {
+    @apply inline-flex items-center justify-center rounded-lg border border-line px-4 py-2.5 text-sm text-paper transition hover:border-mist;
+  }
+}
