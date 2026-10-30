@@ -8,7 +8,11 @@ const names = new Intl.DisplayNames(["en"], { type: "region" });
 
 export type Country = { code: string; name: string };
 
-const toCountry = (code: string): Country => ({ code, name: names.of(code) ?? code });
+// Plain names where the built in list uses awkward forms.
+const OVERRIDES: Record<string, string> = { CG: "Republic of the Congo", CD: "DR Congo", HK: "Hong Kong", PS: "Palestine", MM: "Myanmar" };
+
+const nameOf = (code: string) => OVERRIDES[code] ?? names.of(code) ?? code;
+const toCountry = (code: string): Country => ({ code, name: nameOf(code) });
 
 export const priorityCountries: Country[] = PRIORITY.map(toCountry);
 export const otherCountries: Country[] = ALL.filter((c) => !PRIORITY.includes(c))
@@ -16,4 +20,4 @@ export const otherCountries: Country[] = ALL.filter((c) => !PRIORITY.includes(c)
   .sort((a, b) => a.name.localeCompare(b.name));
 
 export const isCountryCode = (code: string) => ALL.includes(code);
-export const countryName = (code: string) => names.of(code) ?? code;
+export const countryName = nameOf;
