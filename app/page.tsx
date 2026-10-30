@@ -25,7 +25,7 @@ export default function Home() {
           <div>
             <p className="inline-flex items-center gap-2 rounded-full border border-line px-3 py-1.5 text-sm text-mist">
               <span className="size-1.5 rounded-full bg-orange" aria-hidden="true" />
-              Opening soon in Nigeria and the diaspora
+              Coming soon
             </p>
             <h1 className="mt-6 font-display text-[2.15rem] font-semibold leading-[1.05] tracking-tight sm:text-5xl md:text-[3.4rem]">
               {site.tagline}
