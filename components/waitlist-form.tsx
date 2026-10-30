@@ -49,7 +49,7 @@ export function WaitlistForm({ countrySelect }: { countrySelect: React.ReactNode
           {state.message}
         </p>
       )}
-      <button type="submit" disabled={pending} className="btn w-full sm:w-auto">
+      <button type="submit" disabled={pending} className="btn w-full">
         {pending ? "Adding you…" : "Join the waitlist"}
       </button>
     </form>

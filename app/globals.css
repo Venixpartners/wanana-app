@@ -49,3 +49,14 @@
     @apply inline-flex items-center justify-center rounded-lg border border-line px-4 py-2.5 text-sm text-paper transition hover:border-mist;
   }
 }
+
+@keyframes eq {
+  0%, 100% { transform: scaleY(0.35); }
+  50% { transform: scaleY(1); }
+}
+.eq-bar {
+  animation: eq 1s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .eq-bar { animation: none; }
+}

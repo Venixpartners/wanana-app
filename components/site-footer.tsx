@@ -4,7 +4,7 @@ import { site } from "@/lib/site";
 export function SiteFooter() {
   return (
     <footer className="border-t border-line">
-      <div className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-10 text-sm text-mist md:flex-row md:items-center md:justify-between">
+      <div className="mx-auto flex max-w-6xl flex-col gap-6 px-5 py-10 sm:px-6 text-sm text-mist md:flex-row md:items-center md:justify-between">
         <p>
           © {new Date().getFullYear()} {site.company}
         </p>

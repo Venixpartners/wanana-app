@@ -7,18 +7,21 @@ export async function SiteHeader() {
   const live = launchMode() === "live";
   const viewer = live ? await getViewer() : null;
   return (
-    <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
+    <header className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5 sm:px-6 sm:py-6">
       <Logo />
-      {live &&
-        (viewer?.userId ? (
-          <Link href={viewer.profile ? "/me" : "/onboarding"} className="btn-quiet">
-            {viewer.profile ? `@${viewer.profile.handle}` : "Finish your profile"}
-          </Link>
-        ) : (
-          <Link href="/signin" className="btn-quiet">
-            Sign in
-          </Link>
-        ))}
+      {!live ? (
+        <a href="#join" className="btn-quiet hidden sm:inline-flex">
+          Join the waitlist
+        </a>
+      ) : viewer?.userId ? (
+        <Link href={viewer.profile ? "/me" : "/onboarding"} className="btn-quiet">
+          {viewer.profile ? `@${viewer.profile.handle}` : "Finish your profile"}
+        </Link>
+      ) : (
+        <Link href="/signin" className="btn-quiet">
+          Sign in
+        </Link>
+      )}
     </header>
   );
 }
