@@ -25,14 +25,16 @@ export default function Home() {
     <>
       <SiteHeader />
       <main>
-        <section className="mx-auto grid max-w-6xl gap-12 px-6 pb-16 pt-10 md:grid-cols-[1.15fr_1fr] md:gap-16 md:pt-20">
+        <section className="mx-auto grid max-w-6xl gap-12 px-6 pb-16 pt-10 md:grid-cols-[1.15fr_1fr] md:items-start md:gap-16 md:pt-20">
           <div>
             <p className="text-sm font-medium uppercase tracking-[0.18em] text-gold">Coming soon</p>
-            <h1 className="mt-5 font-display text-4xl font-semibold leading-[1.08] tracking-tight sm:text-5xl md:text-[3.5rem]">
+            <h1 className="mt-5 font-display text-4xl font-semibold leading-[1.08] tracking-tight sm:text-5xl md:text-[3.15rem]">
               {site.tagline}
             </h1>
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-mist">{site.description}</p>
-            <p className="mt-6 text-sm text-mist">Opening in Nigeria and across the diaspora at the same time.</p>
+            <p className="mt-6 text-sm text-mist">
+              {site.audience} Opening in Nigeria and across the diaspora at the same time.
+            </p>
           </div>
           <div className="rounded-2xl border border-line bg-ink p-6 sm:p-8">
             <h2 className="font-display text-xl font-semibold">Get in first</h2>

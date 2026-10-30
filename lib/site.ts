@@ -1,9 +1,10 @@
 export const site = {
   name: "Wanana",
   company: "Wanana Technologies Limited",
-  tagline: "Africa's music, measured by the people who love it.",
+  tagline: "The AI Intelligence Layer for African Music Conversations",
   description:
-    "Wanana brings charts, releases and credits together with what fans actually think. Rate songs, settle debates and see how a record lands in Lagos compared with London.",
+    "Right now the conversation about African music is scattered across charts, streaming apps, blogs and social media. Wanana brings it into one place, with AI insights, reviews, polls, discussions and discovery side by side.",
+  audience: "Built for fans, artists, managers, labels, journalists and promoters.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://wanana.africa",
   socials: [
     { label: "Instagram", href: "https://instagram.com/wananaafrica" },
