@@ -1,11 +1,17 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
-import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
 import { getViewer } from "@/lib/supabase/server";
-import { SignInForm } from "./signin-form";
+import { AuthShell } from "@/features/auth/components/auth-shell";
+import { GoogleButton } from "@/features/auth/components/google-button";
+import { SignInForm } from "@/features/auth/components/signin-form";
 
 export const metadata: Metadata = { title: "Sign in" };
+
+const ERRORS: Record<string, string> = {
+  link: "That link has expired or was already used. Sign in below or ask for a new link.",
+  google: "Google sign in didn't go through. Try again, or use your email instead.",
+};
 
 export default async function SignInPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
   const { userId, profile } = await getViewer();
@@ -13,19 +19,24 @@ export default async function SignInPage({ searchParams }: { searchParams: Promi
   const { error } = await searchParams;
 
   return (
-    <>
-      <SiteHeader />
-      <main className="mx-auto max-w-md px-6 py-16">
-        <h1 className="font-display text-3xl font-semibold tracking-tight">Sign in to Wanana</h1>
-        <p className="mb-8 mt-2 text-mist">Rate songs, write reviews and get your say on the charts.</p>
-        {error && (
-          <p role="alert" className="mb-6 rounded-lg border border-orange/50 bg-orange/10 p-3 text-sm">
-            That link has expired or was already used. Request a new one below.
-          </p>
-        )}
-        <SignInForm />
-      </main>
-      <SiteFooter />
-    </>
+    <AuthShell
+      title="Sign in to Wanana"
+      intro={
+        <>
+          New here?{" "}
+          <Link href="/signup" className="text-paper underline underline-offset-4">
+            Create an account
+          </Link>
+        </>
+      }
+    >
+      {error && ERRORS[error] && (
+        <p role="alert" className="mb-6 rounded-lg border border-orange/50 bg-orange/10 p-3 text-sm">
+          {ERRORS[error]}
+        </p>
+      )}
+      <GoogleButton />
+      <SignInForm />
+    </AuthShell>
   );
 }
