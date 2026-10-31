@@ -2,8 +2,10 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { SUPABASE_KEY, SUPABASE_URL } from "./env";
 
+/** Refreshes the session cookies on the response and reports who is signed in. */
 export async function refreshSession(request: NextRequest, response: NextResponse) {
   const supabase = createServerClient(SUPABASE_URL, SUPABASE_KEY, {
+    db: { schema: "music" },
     cookies: {
       getAll() {
         return request.cookies.getAll();
@@ -14,6 +16,7 @@ export async function refreshSession(request: NextRequest, response: NextRespons
       },
     },
   });
-  await supabase.auth.getClaims();
-  return response;
+  const { data } = await supabase.auth.getClaims();
+  const userId = (data?.claims?.sub as string | undefined) ?? null;
+  return { supabase, userId, response };
 }
