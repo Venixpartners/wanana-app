@@ -14,9 +14,16 @@ export async function SiteHeader({ showAction = true }: { showAction?: boolean }
           Join the waitlist
         </a>
       ) : viewer?.userId ? (
-        <Link href={viewer.profile ? "/me" : "/onboarding"} className="btn-quiet">
-          {viewer.profile ? `@${viewer.profile.handle}` : "Finish your profile"}
-        </Link>
+        <div className="flex items-center gap-2">
+          {viewer.profile?.role === "admin" && (
+            <Link href="/admin/catalogue" className="btn-quiet">
+              Admin
+            </Link>
+          )}
+          <Link href={viewer.profile ? "/me" : "/onboarding"} className="btn-quiet">
+            {viewer.profile ? `@${viewer.profile.handle}` : "Finish your profile"}
+          </Link>
+        </div>
       ) : (
         <Link href="/signin" className="btn-quiet">
           Sign in
