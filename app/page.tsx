@@ -1,6 +1,6 @@
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
-import { WaitlistForm } from "@/components/waitlist-form";
+import { WaitlistForm } from "@/features/waitlist/components/waitlist-form";
 import { CountrySelect } from "@/components/country-select";
 import { PulseCard } from "@/components/landing/pulse-card";
 import { ChartPreview } from "@/components/landing/chart-preview";

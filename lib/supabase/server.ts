@@ -29,7 +29,7 @@ export async function getViewer() {
   if (!userId) return { supabase, userId: null, email: null, profile: null };
   const { data: profile } = await supabase
     .from("profiles")
-    .select("id, handle, display_name, city, country_code, audience, role, created_at")
+    .select("id, handle, display_name, city, country_code, audience, role, bio, avatar_url, created_at")
     .eq("id", userId)
     .maybeSingle();
   return { supabase, userId, email: (data?.claims?.email as string) ?? null, profile };
