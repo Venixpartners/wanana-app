@@ -76,3 +76,40 @@ test("unknown catalogue pages show a friendly not found page", async ({ page }) 
     await expect(page.getByRole("heading", { name: "We couldn't find that page" })).toBeVisible();
   }
 });
+
+test("main menu links work and highlight the current section", async ({ page }) => {
+  test.setTimeout(120_000);
+  const nav = page.getByRole("navigation", { name: "Main" });
+  await page.goto("/search");
+  await nav.getByRole("link", { name: "Community" }).click();
+  await expect(page).toHaveURL(/\/community$/, { timeout: 45_000 });
+  await expect(page.getByRole("heading", { level: 1, name: "Community" })).toBeVisible({ timeout: 45_000 });
+  for (const [label, path] of [["Explore", "/explore"], ["Community", "/community"], ["Polls", "/polls"], ["Rankings", "/rankings"], ["Search", "/search"]]) {
+    await page.goto(path);
+    await expect(page.getByRole("heading", { level: 1, name: label })).toBeVisible();
+    await expect(nav.getByRole("link", { name: label })).toHaveAttribute("aria-current", "page");
+  }
+});
+
+test("search asks for two letters and keeps the query in the link", async ({ page }) => {
+  await page.goto("/search?q=a");
+  await expect(page.getByText("Type at least two letters.")).toBeVisible();
+  await page.locator("#q-lg").fill("zzqx");
+  await page.locator("#q-lg").press("Enter");
+  await expect(page).toHaveURL(/\/search\?q=zzqx$/);
+  await expect(page.getByText(/Nothing matches “zzqx” yet/)).toBeVisible();
+});
+
+test("signed out visitors are asked to sign in before posting", async ({ page }) => {
+  for (const path of ["/community/new", "/polls/new", "/rankings/new"]) {
+    await page.goto(path);
+    await expect(page).toHaveURL(/\/signin$/);
+  }
+});
+
+test("unknown community pages show the not found page", async ({ page }) => {
+  for (const path of ["/community/not-an-id", "/polls/00000000-0000-0000-0000-000000000000", "/rankings/not-an-id", "/reviews/not-an-id", "/u/no_such_fan_here", "/explore/genre/no-such-genre"]) {
+    const res = await page.goto(path);
+    expect(res?.status()).toBe(404);
+  }
+});

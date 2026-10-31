@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
+import { PageShell } from "@/components/page-shell";
 import { CoverArt } from "@/components/landing/cover-art";
 import { getTrackPage } from "@/features/catalogue/queries";
 import { artVariant } from "@/features/catalogue/slug";
@@ -10,8 +9,9 @@ import { KIND_LABEL, formatDuration, formatReleaseDate } from "@/features/catalo
 import { StreamingLinks } from "@/features/catalogue/components/streaming-links";
 import { ArtistLine } from "@/features/catalogue/components/artist-line";
 import { TrackList } from "@/features/catalogue/components/track-list";
-import { PulsePlaceholder } from "@/features/catalogue/components/pulse-placeholder";
+import { SubjectCommunity } from "@/features/community/components/subject-community";
 import { Section } from "@/features/catalogue/components/section";
+import { ShareButton } from "@/features/community/components/share-button";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -34,9 +34,8 @@ export default async function SongPage({ params }: Props) {
 
   return (
     <>
-      <SiteHeader />
-      <main className="mx-auto max-w-5xl px-5 pb-16 sm:px-6">
-        <header className="flex flex-col gap-6 pt-6 sm:flex-row sm:items-end sm:pt-10">
+      <PageShell>
+        <header className="flex flex-col gap-6 sm:flex-row sm:items-end">
           <CoverArt variant={artVariant(release?.slug ?? track.slug)} className="size-44 shrink-0 rounded-2xl sm:size-52" />
           <div className="min-w-0">
             <p className="text-sm text-mist">Song{track.is_published ? "" : ", draft"}</p>
@@ -53,21 +52,24 @@ export default async function SongPage({ params }: Props) {
               </p>
             )}
             {facts.length > 0 && <p className="mt-1 text-sm text-mist">{facts.join(". ")}</p>}
+            <div className="mt-4">
+              <ShareButton path={`/song/${track.slug}`} title={`${track.title} by ${artist.name} on Wanana`} />
+            </div>
           </div>
         </header>
 
-        <div className="mt-8 grid gap-6 md:grid-cols-[1fr_320px]">
+        <div className="mt-8">
           <StreamingLinks links={track.links} title={track.title} />
-          <PulsePlaceholder what="song" />
         </div>
+
+        <SubjectCommunity subject={{ kind: "track", id: track.id, slug: track.slug, name: track.title }} path={`/song/${track.slug}`} />
 
         {more.length > 0 && (
           <Section title={`More from ${artist.name}`}>
             <TrackList tracks={more} artists={new Map([[artist.id, main]])} features={new Map()} />
           </Section>
         )}
-      </main>
-      <SiteFooter />
+      </PageShell>
     </>
   );
 }
