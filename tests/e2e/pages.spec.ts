@@ -61,3 +61,18 @@ test("callback refuses to redirect off site", async ({ page }) => {
   await page.goto("/auth/callback?next=//evil.example");
   await expect(page).toHaveURL(/\/signin\?error=link$/);
 });
+
+test("admin pages send signed out visitors to sign in", async ({ page }) => {
+  for (const path of ["/admin", "/admin/catalogue", "/admin/catalogue/artists/new", "/admin/catalogue/songs/new"]) {
+    await page.goto(path);
+    await expect(page).toHaveURL(/\/signin$/);
+  }
+});
+
+test("unknown catalogue pages show a friendly not found page", async ({ page }) => {
+  for (const path of ["/artist/no-such-artist", "/album/no-such-album", "/song/no-such-song"]) {
+    const res = await page.goto(path);
+    expect(res?.status()).toBe(404);
+    await expect(page.getByRole("heading", { name: "We couldn't find that page" })).toBeVisible();
+  }
+});
