@@ -5,6 +5,11 @@ export const AI_MODEL = process.env.AI_MODEL || "claude-sonnet-5-5";
 
 export class AiUnavailable extends Error {}
 
+/** False until an AI key is set. Ask Wanana shows a coming soon state until then. */
+export function aiEnabled() {
+  return !!process.env.ANTHROPIC_API_KEY;
+}
+
 type Tool = { name: string; description: string; input_schema: Record<string, unknown> };
 
 export type ToolCallResult<T> = { input: T; model: string; inputTokens: number; outputTokens: number };

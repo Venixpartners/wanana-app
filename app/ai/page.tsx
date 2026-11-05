@@ -7,6 +7,7 @@ import { isUuid, timeAgo } from "@/lib/text";
 import { Section } from "@/features/catalogue/components/section";
 import { AskForm } from "@/features/ask/components/ask-form";
 import { AnswerView } from "@/features/ask/components/answer-view";
+import { aiEnabled } from "@/server/ai/anthropic";
 import { STARTERS, answerSchema, questionSchema, type Source } from "@/features/ask/answer";
 
 // Answers can take a little while.
@@ -42,7 +43,25 @@ export default async function AskPage({ searchParams }: Props) {
       <PageTitle title="Ask Wanana" intro="Ask about any song, album, artist or chart. Answers come only from what fans on Wanana score and say, with the sources to check." />
 
       <div className="mt-8">
-        {member ? (
+        {!aiEnabled() ? (
+          <div className="rounded-2xl border border-gold/50 bg-ink p-5">
+            <p className="flex items-center gap-2 font-display text-lg font-semibold">
+              <Sparkles size={18} className="text-gold" aria-hidden="true" />
+              Ask Wanana is coming soon
+            </p>
+            <p className="mt-2 text-sm text-mist">
+              Soon you&apos;ll be able to ask about any song, album, artist or chart and get an answer built from what fans on Wanana actually score and say. Until then, the charts and the Fan Verdict show what fans think right now.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <Link href="/charts" className="btn-quiet">
+                See the charts
+              </Link>
+              <Link href="/verdict" className="btn-quiet">
+                See the Fan Verdict
+              </Link>
+            </div>
+          </div>
+        ) : member ? (
           <AskForm initial={initial.success ? initial.data : ""} autoAsk={initial.success && !h} />
         ) : (
           <div className="rounded-2xl border border-line bg-ink p-5">
@@ -65,6 +84,7 @@ export default async function AskPage({ searchParams }: Props) {
         </div>
       )}
 
+      {aiEnabled() && (
       <Section title="Try asking">
         <div className="flex flex-wrap gap-2">
           {STARTERS.map((s) => (
@@ -74,6 +94,7 @@ export default async function AskPage({ searchParams }: Props) {
           ))}
         </div>
       </Section>
+      )}
 
       {member && (history?.length ?? 0) > 0 && (
         <Section title="Your recent questions">
