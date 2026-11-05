@@ -40,6 +40,9 @@ export default async function ChartPage({ params }: Props) {
             {CHART_INFO[c].short}
           </Link>
         ))}
+        <Link href="/verdict" className="shrink-0 rounded-full border border-gold/50 px-4 py-2 text-sm text-gold transition hover:border-gold">
+          Fan Verdict
+        </Link>
       </nav>
 
       <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">

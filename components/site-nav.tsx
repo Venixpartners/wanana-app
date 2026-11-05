@@ -7,6 +7,7 @@ import { Search } from "lucide-react";
 const LINKS = [
   { href: "/explore", label: "Explore" },
   { href: "/charts", label: "Charts" },
+  { href: "/versus", label: "Versus" },
   { href: "/community", label: "Community" },
   { href: "/polls", label: "Polls" },
   { href: "/rankings", label: "Rankings" },

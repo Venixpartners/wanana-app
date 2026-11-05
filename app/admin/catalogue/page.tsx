@@ -58,6 +58,12 @@ export default async function CatalogueAdmin({ searchParams }: { searchParams: P
 
   return (
     <AdminShell title="Catalogue">
+      <p className="mb-8 text-sm text-mist">
+        Also in admin:{" "}
+        <Link href="/admin/versus" className="text-paper underline underline-offset-4">
+          Versus battles and brackets
+        </Link>
+      </p>
       {done && slug && /^[a-z0-9-]+$/.test(slug) && (
         <p role="status" className="mb-8 rounded-lg border border-emerald/60 bg-emerald/10 p-3 text-sm">
           {done.label}{" "}

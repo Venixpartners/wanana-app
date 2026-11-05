@@ -9,6 +9,9 @@ import { getReview } from "@/features/reviews/queries";
 import { fanPulse, getChart, type Pulse } from "@/features/pulse/queries";
 import { CHART_INFO, isChart, pulseWord } from "@/features/pulse/charts";
 import { isUuid, plural } from "@/lib/text";
+import { getBattle, getBracket } from "@/features/versus/queries";
+import { roundName, split } from "@/features/versus/rounds";
+import { getVerdict, isFriday, lastVerdictFriday, verdictDateText } from "@/features/verdict/queries";
 import type { CardData } from "./card";
 
 function pulseParts(p: Pulse): Pick<CardData, "score" | "split"> {
@@ -122,7 +125,56 @@ async function chart(name: string): Promise<CardData | null> {
   };
 }
 
+async function versus(key: string): Promise<CardData | null> {
+  if (key.startsWith("bracket/")) {
+    const data = await getBracket(key.slice(8), null);
+    if (!data) return null;
+    const { bracket: b, battles, champion } = data;
+    const live = battles.filter((x) => x.round === b.current_round);
+    return {
+      eyebrow: champion ? "Versus · fans have decided" : `Versus · ${roundName(b.size, b.current_round)}`,
+      title: b.title,
+      subtitle: champion ? `Winner: ${champion.title}${champion.artist ? `, ${champion.artist}` : ""}` : `${b.size} ${b.kind === "track" ? "songs" : "releases"}, one left standing`,
+      lines: champion ? undefined : live.map((x) => ({ label: `${x.a?.title ?? "?"} v ${x.b?.title ?? "?"}` })),
+      cta: champion ? "See every round on" : "Pick your side on",
+      art: artVariant(b.slug),
+    };
+  }
+  const data = await getBattle(key, null);
+  if (!data) return null;
+  const { battle: b, bracket } = data;
+  const sides = [b.a, b.b];
+  const pct = split(b.a_votes, b.b_votes);
+  return {
+    eyebrow: b.closed ? `Versus result · ${plural(b.a_votes + b.b_votes, "vote")}` : "Versus · vote to see the result",
+    title: b.title ?? `${b.a?.title ?? "Side A"} v ${b.b?.title ?? "Side B"}`,
+    subtitle: bracket && b.round ? `${bracket.title}, ${roundName(bracket.size, b.round).toLowerCase()}` : undefined,
+    // Vote to see: open battles never show the count on a card.
+    lines: sides.map((x, i) => ({ label: `${x?.title ?? "Removed"}${x?.artist ? `, ${x.artist}` : ""}`, ...(b.closed ? { value: `${pct[i]}%`, bar: pct[i] } : {}) })),
+    cta: b.closed ? "See how home and diaspora voted on" : "Pick a side on",
+    art: b.a?.art ?? 0,
+  };
+}
+
+async function verdict(key: string): Promise<CardData | null> {
+  const friday = key === "latest" ? await lastVerdictFriday() : key;
+  if (!friday || !isFriday(friday)) return null;
+  const { entries } = await getVerdict(friday);
+  return {
+    eyebrow: "Fan Verdict",
+    title: `Week of ${verdictDateText(friday)}`,
+    subtitle: "New releases, ranked by fan scores",
+    lines: entries.length
+      ? entries.slice(0, 5).map((e) => ({ label: `${e.position}. ${e.release?.title ?? "Removed"}${e.release?.artist ? `, ${e.release.artist}` : ""}`, value: String(e.pulse) }))
+      : [{ label: "No release reached three fan scores" }],
+    cta: "Score this week's releases on",
+    art: 2,
+  };
+}
+
 const LOADERS: Record<string, (key: string) => Promise<CardData | null>> = {
+  versus,
+  verdict,
   song,
   album,
   artist,
@@ -135,7 +187,7 @@ const LOADERS: Record<string, (key: string) => Promise<CardData | null>> = {
 /** Card content for a Wanana path such as /song/ojuelegba or /charts/fan. */
 export async function cardFor(section: string, key: string): Promise<CardData | null> {
   const load = LOADERS[section];
-  if (!load || !key || key.length > 120) return null;
+  if (!load || !key || key.length > 130) return null;
   try {
     return await load(key);
   } catch (e) {
