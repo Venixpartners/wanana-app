@@ -17,7 +17,9 @@ type Props = { params: Promise<{ id: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const poll = isUuid(id) ? await getPoll(id, null) : null;
-  return poll ? { title: poll.question, description: `Vote on Wanana: ${poll.question}` } : { title: "Poll not found" };
+  if (!poll) return { title: "Poll not found" };
+  const description = poll.closed ? "See how fans voted on Wanana." : "Vote on Wanana to see the results.";
+  return { title: poll.question, description, openGraph: { title: poll.question, description, url: `/polls/${poll.id}` } };
 }
 
 export default async function PollPage({ params }: Props) {

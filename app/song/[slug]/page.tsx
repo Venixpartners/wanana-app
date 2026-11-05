@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { track, artist } = data;
   const title = `${track.title} by ${artist.name}`;
   const description = `Ratings, reviews and conversation about ${track.title} by ${artist.name} on Wanana.`;
-  return { title, description, alternates: { canonical: `/song/${track.slug}` }, openGraph: { title, description } };
+  return { title, description, alternates: { canonical: `/song/${track.slug}` }, openGraph: { title, description, url: `/song/${track.slug}` } };
 }
 
 export default async function SongPage({ params }: Props) {

@@ -14,7 +14,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { chart } = await params;
   if (!isChart(chart)) return { title: "Chart not found" };
   const info = CHART_INFO[chart];
-  return { title: `${info.title}: Wanana Charts`, description: `${info.about} Ranked by what fans think, not just how often a song is played.`, alternates: { canonical: `/charts/${chart}` } };
+  const title = `${info.title}: Wanana Charts`;
+  const description = `${info.about} Ranked by what fans think, not just how often a song is played.`;
+  return { title, description, alternates: { canonical: `/charts/${chart}` }, openGraph: { title, description, url: `/charts/${chart}` } };
 }
 
 export default async function ChartPage({ params }: Props) {

@@ -17,7 +17,10 @@ type Props = { params: Promise<{ id: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const data = isUuid(id) ? await getRanking(id) : null;
-  return data ? { title: data.ranking.title, description: data.ranking.description ?? `A fan ranking on Wanana.` } : { title: "List not found" };
+  if (!data) return { title: "List not found" };
+  const title = data.ranking.title;
+  const description = data.ranking.description ?? "A fan ranking on Wanana.";
+  return { title, description, openGraph: { title, description, url: `/rankings/${data.ranking.id}` } };
 }
 
 export default async function RankingPage({ params }: Props) {
