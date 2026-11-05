@@ -12,7 +12,8 @@ export const fanPulse = cache(async (kind: SubjectKind, id: string): Promise<Pul
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("fan_pulse", { p_kind: kind, p_id: id });
   if (error) console.error("fan_pulse failed", error.code, error.message);
-  const rows = ((data ?? []) as PulseRow[]).map((r) => ({ ...r, average: Number(r.average) }));
+  // The database always sends an overall row, even with no scores, so empty rows are dropped here.
+  const rows = ((data ?? []) as PulseRow[]).filter((r) => r.ratings > 0 && r.pulse !== null).map((r) => ({ ...r, average: Number(r.average) }));
   const pick = (a: PulseRow["audience"]) => rows.find((r) => r.audience === a) ?? null;
   return { all: pick("all"), home: pick("home"), diaspora: pick("diaspora") };
 });
