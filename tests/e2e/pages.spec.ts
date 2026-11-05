@@ -113,3 +113,10 @@ test("unknown community pages show the not found page", async ({ page }) => {
     expect(res?.status()).toBe(404);
   }
 });
+
+test("charts page shows the four charts", async ({ page }) => {
+  await page.goto("/charts");
+  await expect(page).toHaveURL(/\/charts\/fan$/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Wanana Charts");
+  for (const name of ["Fan", "Nigeria", "Diaspora", "Rising"]) await expect(page.getByRole("link", { name, exact: true })).toBeVisible();
+});

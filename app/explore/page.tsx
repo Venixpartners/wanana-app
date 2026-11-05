@@ -18,13 +18,16 @@ import { PollCard } from "@/features/polls/components/poll-card";
 import { listRankings } from "@/features/rankings/queries";
 import { RankingList } from "@/features/rankings/components/ranking-list";
 import { Empty } from "@/features/community/components/empty";
+import { getChart } from "@/features/pulse/queries";
+import { ChartTable } from "@/features/pulse/components/chart-table";
 
 export const metadata: Metadata = { title: "Explore", description: "New African music, the genres fans follow, and what people are saying about it on Wanana." };
 
 export default async function ExplorePage() {
   const { userId, profile } = await getViewer();
   const viewerId = profile ? userId : null;
-  const [genres, releases, songs, artists, reviews, discussions, polls, rankings] = await Promise.all([
+  const [chart, genres, releases, songs, artists, reviews, discussions, polls, rankings] = await Promise.all([
+    getChart("fan", 5),
     listGenres(),
     newReleases(8),
     newSongs(8),
@@ -42,6 +45,15 @@ export default async function ExplorePage() {
       <div className="mt-6 max-w-2xl">
         <SearchBox size="sm" />
       </div>
+
+      {chart.length > 0 && (
+        <Section title="Top of the Fan Chart">
+          <ChartTable entries={chart} compact />
+          <Link href="/charts/fan" className="btn-quiet mt-4">
+            See all Wanana Charts
+          </Link>
+        </Section>
+      )}
 
       <Section title="Genres">
         <GenreChips genres={genres} />
