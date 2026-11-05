@@ -11,6 +11,7 @@ import { ToggleButton } from "@/features/community/components/toggle-button";
 import { ReportButton } from "@/features/community/components/report-button";
 import { ShareButton } from "@/features/community/components/share-button";
 import { ProfileActivity } from "@/features/community/components/profile-activity";
+import { EarlyEarBadges } from "@/features/pulse/components/early-ear";
 
 type Props = { params: Promise<{ handle: string }> };
 
@@ -66,6 +67,7 @@ export default async function PublicProfile({ params }: Props) {
         <ShareButton path={path} title={`${p.display_name} on Wanana`} />
         {viewerId && !own && <ReportButton targetType="profile" targetId={p.id} />}
       </div>
+      <EarlyEarBadges userId={p.id} own={own} />
       <ProfileActivity authorId={p.id} viewerId={viewerId} path={path} own={own} />
     </PageShell>
   );

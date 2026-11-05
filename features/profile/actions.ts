@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { getViewer } from "@/lib/supabase/server";
 import { SUPABASE_URL } from "@/lib/supabase/env";
 import { avatarUrlPrefix, fieldErrors, profileSchema } from "./schema";
+import { claimShareSignup } from "@/features/share/actions";
 
 export type ProfileState = { status: "idle" | "error" | "saved"; message?: string; fields?: Record<string, string> };
 
@@ -32,6 +33,7 @@ export async function createProfileAction(_prev: ProfileState, form: FormData): 
     console.error("create profile failed", error.code, error.message);
     return { status: "error", message: "We couldn't save your profile. Please try again." };
   }
+  await claimShareSignup();
   redirect("/me");
 }
 

@@ -1,7 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { peopleByIds, type Person } from "@/features/community/people";
 import { resolveSubjects, subjectFor, type Subject, type SubjectColumns, type SubjectKind } from "@/features/community/subjects";
-import { average } from "./schema";
 
 export type ReviewRow = SubjectColumns & {
   id: string;
@@ -23,13 +22,6 @@ const COLS = "id, author_id, artist_id, release_id, track_id, rating, title, bod
 async function decorate(rows: ReviewRow[]): Promise<ReviewItem[]> {
   const [people, subjects] = await Promise.all([peopleByIds(rows.map((r) => r.author_id)), resolveSubjects(rows)]);
   return rows.map((r) => ({ ...r, author: people.get(r.author_id), subject: subjectFor(subjects, r) }));
-}
-
-export async function ratingSummary(subject: { kind: SubjectKind; id: string }) {
-  const supabase = await createClient();
-  const { data } = await supabase.from("reviews").select("rating").eq(`${subject.kind}_id`, subject.id).eq("is_removed", false).limit(10000);
-  const ratings = (data ?? []).map((r) => r.rating as number);
-  return { average: average(ratings), count: ratings.length };
 }
 
 export async function listReviews(opts: { subject?: { kind: SubjectKind; id: string }; authorId?: string; sort?: "helpful" | "new"; writtenOnly?: boolean; limit?: number } = {}) {

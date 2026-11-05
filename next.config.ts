@@ -2,6 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // Share card fonts are read from disk at request time.
+  outputFileTracingIncludes: { "/**": ["./assets/fonts/*.woff"] },
   async headers() {
     return [
       {

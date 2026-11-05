@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
 import "@fontsource-variable/sora/wght.css";
 import "@fontsource-variable/inter/wght.css";
 import { site } from "@/lib/site";
+import { ShareRef } from "@/features/share/components/share-ref";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -23,7 +25,12 @@ export const viewport: Viewport = { themeColor: "#0B0F13" };
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="min-h-dvh">{children}</body>
+      <body className="min-h-dvh">
+        {children}
+        <Suspense fallback={null}>
+          <ShareRef />
+        </Suspense>
+      </body>
     </html>
   );
 }

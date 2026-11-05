@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { getViewer } from "@/lib/supabase/server";
 import { Section } from "@/features/catalogue/components/section";
-import { RatingSummary } from "@/features/reviews/components/rating-summary";
+import { FanPulse } from "@/features/pulse/components/fan-pulse";
+import { fanPulse } from "@/features/pulse/queries";
 import { ReviewForm } from "@/features/reviews/components/review-form";
 import { ReviewCard } from "@/features/reviews/components/review-card";
-import { listReviews, ratingSummary, viewerHelpful, viewerReview } from "@/features/reviews/queries";
+import { listReviews, viewerHelpful, viewerReview } from "@/features/reviews/queries";
 import { listDiscussions } from "@/features/discussions/queries";
 import { DiscussionList } from "@/features/discussions/components/discussion-list";
 import { listPolls } from "@/features/polls/queries";
@@ -18,8 +19,8 @@ export async function SubjectCommunity({ subject, path }: { subject: Subject; pa
   const { userId, profile } = await getViewer();
   const viewerId = profile ? userId : null;
   const what = KIND_WORD[subject.kind];
-  const [summary, mine, reviews, discussions, polls] = await Promise.all([
-    ratingSummary(subject),
+  const [pulse, mine, reviews, discussions, polls] = await Promise.all([
+    fanPulse(subject.kind, subject.id),
     viewerReview(subject, viewerId),
     listReviews({ subject, limit: 6 }),
     listDiscussions({ subject, limit: 5 }),
@@ -31,7 +32,7 @@ export async function SubjectCommunity({ subject, path }: { subject: Subject; pa
   return (
     <>
       <div className="mt-8 grid gap-6 md:grid-cols-[320px_1fr]">
-        <RatingSummary average={summary.average} count={summary.count} what={what} />
+        <FanPulse pulse={pulse} what={what} />
         {viewerId ? (
           <ReviewForm subject={{ kind: subject.kind, id: subject.id, name: subject.name }} existing={mine} back={path} />
         ) : (

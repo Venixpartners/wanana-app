@@ -13,9 +13,9 @@ function closingText(p: PollItem) {
   return days <= 1 ? "Closes within a day" : `Closes in ${days} days`;
 }
 
-/** Signed in fans vote first and see results after. Everyone else sees results. */
+/** Vote to see: results show once you have voted or the poll has closed. */
 export function PollCard({ poll, viewerId, back, linkTitle = true }: { poll: PollItem; viewerId: string | null; back: string; linkTitle?: boolean }) {
-  const showResults = !viewerId || !!poll.viewerVote || poll.closed;
+  const showResults = !!poll.viewerVote || poll.closed;
   const pct = percentages(poll.options.map((o) => o.vote_count));
   const top = Math.max(...poll.options.map((o) => o.vote_count), 0);
   return (
@@ -52,6 +52,19 @@ export function PollCard({ poll, viewerId, back, linkTitle = true }: { poll: Pol
             );
           })}
         </ul>
+      ) : !viewerId ? (
+        <div className="mt-4 grid gap-2">
+          <ul className="grid gap-2">
+            {poll.options.map((o) => (
+              <li key={o.id} className="rounded-lg border border-line px-3 py-2.5 text-sm">
+                {o.label}
+              </li>
+            ))}
+          </ul>
+          <Link href="/signin" className="btn-quiet mt-1 justify-self-start">
+            Sign in to vote and see results
+          </Link>
+        </div>
       ) : (
         <form action={voteAction} className="mt-4 grid gap-2">
           <input type="hidden" name="poll_id" value={poll.id} />
@@ -72,7 +85,6 @@ export function PollCard({ poll, viewerId, back, linkTitle = true }: { poll: Pol
       )}
       <p className="mt-3 text-xs text-mist">
         {plural(poll.vote_count, "vote")}. Asked by {poll.author ? `@${poll.author.handle}` : "a former member"} {timeAgo(poll.created_at)}.
-        {!viewerId && " Sign in to vote."}
       </p>
     </article>
   );
