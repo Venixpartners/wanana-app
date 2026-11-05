@@ -1,6 +1,8 @@
 export function Avatar({ name, url, size = 64 }: { name: string; url?: string | null; size?: number }) {
+  // Letters only, so names with quotes or emoji still get clean initials.
   const initials = name
     .split(/\s+/)
+    .map((p) => p.replace(/[^\p{L}\p{N}]/gu, ""))
     .filter(Boolean)
     .slice(0, 2)
     .map((p) => p[0]?.toUpperCase())
