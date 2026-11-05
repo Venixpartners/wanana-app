@@ -66,7 +66,16 @@ export default async function MePage({ searchParams }: { searchParams: Promise<{
             </div>
           ))}
         </div>
-        <p className="mt-4 text-sm text-mist">Early Ear badges arrive with Wanana Charts.</p>
+        <div className="mt-6 grid gap-3 sm:grid-cols-2">
+          <Link href="/wrapped" className="rounded-xl border border-line bg-ink p-4 hover:border-mist">
+            <span className="block font-display font-semibold">Your Wrapped</span>
+            <span className="mt-1 block text-sm text-mist">Your month in scores, and how your taste compares with home and the diaspora.</span>
+          </Link>
+          <Link href="/invite" className="rounded-xl border border-line bg-ink p-4 hover:border-mist">
+            <span className="block font-display font-semibold">Invite friends</span>
+            <span className="mt-1 block text-sm text-mist">Bring three friends in the founding months to become a Founding Fan.</span>
+          </Link>
+        </div>
 
         <ProfileActivity authorId={userId} viewerId={userId} path="/me" own />
 

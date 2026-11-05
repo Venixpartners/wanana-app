@@ -1,7 +1,7 @@
 export const SHARE_CHANNELS = ["whatsapp", "x", "facebook", "instagram", "tiktok", "copy", "native", "image"] as const;
 export type ShareChannel = (typeof SHARE_CHANNELS)[number];
 
-export const SHARE_KINDS = ["song", "album", "artist", "poll", "ranking", "review", "chart", "profile", "versus", "verdict"] as const;
+export const SHARE_KINDS = ["song", "album", "artist", "poll", "ranking", "review", "chart", "profile", "versus", "verdict", "invite", "wrapped"] as const;
 export type ShareKind = (typeof SHARE_KINDS)[number];
 
 const PREFIX: [string, ShareKind][] = [
@@ -15,6 +15,8 @@ const PREFIX: [string, ShareKind][] = [
   ["/versus/", "versus"],
   ["/verdict", "verdict"],
   ["/u/", "profile"],
+  ["/join/", "invite"],
+  ["/wrapped/", "wrapped"],
 ];
 
 /** What a Wanana path is about, for share tracking. */

@@ -9,7 +9,7 @@ import { SearchBox } from "@/features/search/components/search-box";
 import { ArtistGrid } from "@/features/explore/components/artist-grid";
 import { GenreChips } from "@/features/explore/components/genre-chips";
 import { listGenres, newArtists, newReleases, newSongs } from "@/features/explore/queries";
-import { listReviews, viewerHelpful } from "@/features/reviews/queries";
+import { listReviews, viewerHelpful, voiceReviews } from "@/features/reviews/queries";
 import { ReviewCard } from "@/features/reviews/components/review-card";
 import { listDiscussions } from "@/features/discussions/queries";
 import { DiscussionList } from "@/features/discussions/components/discussion-list";
@@ -26,7 +26,8 @@ export const metadata: Metadata = { title: "Explore", description: "New African 
 export default async function ExplorePage() {
   const { userId, profile } = await getViewer();
   const viewerId = profile ? userId : null;
-  const [chart, genres, releases, songs, artists, reviews, discussions, polls, rankings] = await Promise.all([
+  const [voices, chart, genres, releases, songs, artists, reviews, discussions, polls, rankings] = await Promise.all([
+    voiceReviews(4),
     getChart("fan", 5),
     listGenres(),
     newReleases(8),
@@ -37,7 +38,7 @@ export default async function ExplorePage() {
     listPolls({ limit: 2, viewerId }),
     listRankings({ limit: 4 }),
   ]);
-  const helpful = await viewerHelpful(reviews.map((r) => r.id), viewerId);
+  const helpful = await viewerHelpful([...reviews, ...voices].map((r) => r.id), viewerId);
 
   return (
     <PageShell current="/explore">
@@ -70,6 +71,17 @@ export default async function ExplorePage() {
       <Section title="Artists">
         <ArtistGrid artists={artists} empty="Artists appear here as they are added." />
       </Section>
+
+      {voices.length > 0 && (
+        <Section title="From Wanana Voices">
+          <p className="-mt-2 mb-4 text-sm text-mist">Reviews from some of Wanana&apos;s most helpful fans.</p>
+          <div className="grid gap-4 md:grid-cols-2">
+            {voices.map((r) => (
+              <ReviewCard key={r.id} review={r} viewerId={viewerId} helpful={helpful.has(r.id)} back="/explore" showSubject />
+            ))}
+          </div>
+        </Section>
+      )}
 
       <Section title="Reviews fans found helpful">
         {reviews.length ? (

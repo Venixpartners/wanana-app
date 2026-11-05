@@ -12,6 +12,9 @@ import { isUuid, plural } from "@/lib/text";
 import { getBattle, getBracket } from "@/features/versus/queries";
 import { roundName, split } from "@/features/versus/rounds";
 import { getVerdict, isFriday, lastVerdictFriday, verdictDateText } from "@/features/verdict/queries";
+import { getWrapped } from "@/features/wrapped/queries";
+import { parsePeriod } from "@/features/wrapped/periods";
+import { site } from "@/lib/site";
 import type { CardData } from "./card";
 
 function pulseParts(p: Pulse): Pick<CardData, "score" | "split"> {
@@ -102,7 +105,7 @@ async function review(id: string): Promise<CardData | null> {
   if (!got) return null;
   const rv = got.review;
   return {
-    eyebrow: `Review${rv.author ? ` by @${rv.author.handle}` : ""}`,
+    eyebrow: `Review${rv.author ? ` by @${rv.author.handle}` : ""}${rv.author?.badges?.includes("voice") ? " · Wanana Voice" : ""}`,
     title: rv.title ?? rv.subject?.name ?? "A Wanana review",
     subtitle: rv.title ? rv.subject?.name : undefined,
     score: { value: String(rv.rating), unit: "/ 10", label: rv.audience === "diaspora" ? "Diaspora fan" : rv.audience === "home" ? "Home fan" : "Fan" },
@@ -172,7 +175,42 @@ async function verdict(key: string): Promise<CardData | null> {
   };
 }
 
+async function wrapped(key: string): Promise<CardData | null> {
+  const [handle, periodKey] = key.split("/");
+  const period = periodKey ? parsePeriod(periodKey) : null;
+  if (!handle || !period) return null;
+  const w = await getWrapped(handle, period);
+  if (!w) return null;
+  const agree = [w.agree_home !== null ? `home fans ${w.agree_home}%` : null, w.agree_diaspora !== null ? `the diaspora ${w.agree_diaspora}%` : null].filter(Boolean);
+  return {
+    eyebrow: `Wanana Wrapped · ${period.label}`,
+    title: `${w.person.display_name}`,
+    subtitle: agree.length ? `Agrees with ${agree.join(", ")}` : `@${w.person.handle}`,
+    score: { value: w.scores.toLocaleString("en-GB"), unit: w.scores === 1 ? "score given" : "scores given", label: w.average !== null ? `Average ${w.average.toFixed(1)}` : "Just getting started" },
+    lines: w.top.slice(0, 3).map((t, i) => ({ label: `${i + 1}. ${t.title}${t.by ? `, ${t.by}` : ""}`, value: String(t.rating) })),
+    cta: "Get your own Wrapped on",
+    art: 4,
+  };
+}
+
+async function join(handle: string): Promise<CardData | null> {
+  if (!/^[a-z0-9_]{3,20}$/.test(handle)) return null;
+  const supabase = await createClient();
+  const { data: p } = await supabase.from("profiles").select("handle, display_name").eq("handle", handle).maybeSingle();
+  if (!p) return null;
+  return {
+    eyebrow: "You're invited",
+    title: `${p.display_name} invited you to Wanana`,
+    subtitle: site.tagline,
+    lines: [{ label: "Score songs and albums out of 10" }, { label: "See how home and diaspora fans differ" }, { label: "Vote in Versus battles and polls" }],
+    cta: "Join on",
+    art: 0,
+  };
+}
+
 const LOADERS: Record<string, (key: string) => Promise<CardData | null>> = {
+  wrapped,
+  join,
   versus,
   verdict,
   song,

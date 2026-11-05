@@ -24,11 +24,12 @@ async function decorate(rows: ReviewRow[]): Promise<ReviewItem[]> {
   return rows.map((r) => ({ ...r, author: people.get(r.author_id), subject: subjectFor(subjects, r) }));
 }
 
-export async function listReviews(opts: { subject?: { kind: SubjectKind; id: string }; authorId?: string; sort?: "helpful" | "new"; writtenOnly?: boolean; limit?: number } = {}) {
+export async function listReviews(opts: { subject?: { kind: SubjectKind; id: string }; authorId?: string; authorIds?: string[]; sort?: "helpful" | "new"; writtenOnly?: boolean; limit?: number } = {}) {
   const supabase = await createClient();
   let q = supabase.from("reviews").select(COLS).eq("is_removed", false);
   if (opts.subject) q = q.eq(`${opts.subject.kind}_id`, opts.subject.id);
   if (opts.authorId) q = q.eq("author_id", opts.authorId);
+  if (opts.authorIds) q = q.in("author_id", opts.authorIds.length ? opts.authorIds : ["00000000-0000-0000-0000-000000000000"]);
   if (opts.writtenOnly ?? true) q = q.not("body", "is", null);
   q = opts.sort === "new" ? q.order("created_at", { ascending: false }) : q.order("helpful_count", { ascending: false }).order("created_at", { ascending: false });
   const { data } = await q.limit(opts.limit ?? 20).returns<ReviewRow[]>();
@@ -74,4 +75,13 @@ export async function countReviews(authorId: string) {
     supabase.from("reviews").select("id", { count: "exact", head: true }).eq("author_id", authorId).not("body", "is", null),
   ]);
   return { ratings: all.count ?? 0, reviews: written.count ?? 0 };
+}
+
+/** Recent standout reviews by Wanana Voices. */
+export async function voiceReviews(limit = 4) {
+  const supabase = await createClient();
+  const { data } = await supabase.from("badges").select("user_id").eq("badge", "voice").limit(500);
+  const ids = (data ?? []).map((r) => r.user_id as string);
+  if (!ids.length) return [];
+  return listReviews({ authorIds: ids, sort: "helpful", limit });
 }

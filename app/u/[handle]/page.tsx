@@ -12,6 +12,10 @@ import { ReportButton } from "@/features/community/components/report-button";
 import { ShareButton } from "@/features/community/components/share-button";
 import { ProfileActivity } from "@/features/community/components/profile-activity";
 import { EarlyEarBadges } from "@/features/pulse/components/early-ear";
+import { BadgeChips } from "@/features/badges/components/badge-chips";
+import { badgesFor } from "@/features/badges/queries";
+import { setBadgeAction } from "@/features/badges/actions";
+import { BADGE_INFO, type BadgeKey } from "@/features/badges/badges";
 
 type Props = { params: Promise<{ handle: string }> };
 
@@ -35,7 +39,9 @@ export default async function PublicProfile({ params }: Props) {
   const viewerId = profile ? userId : null;
   const own = viewerId === p.id;
   const path = `/u/${p.handle}`;
-  const [counts, follow, following] = await Promise.all([countReviews(p.id), followState({ userId: p.id }, viewerId), followingCount(p.id)]);
+  const [counts, follow, following, badgeMap] = await Promise.all([countReviews(p.id), followState({ userId: p.id }, viewerId), followingCount(p.id), badgesFor([p.id])]);
+  const badges = badgeMap.get(p.id) ?? [];
+  const isAdmin = profile?.role === "admin";
   const place = [p.city, countryName(p.country_code)].filter(Boolean).join(", ");
   const joined = new Date(p.created_at).toLocaleDateString("en-GB", { month: "long", year: "numeric" });
 
@@ -57,6 +63,11 @@ export default async function PublicProfile({ params }: Props) {
           </p>
         </div>
       </div>
+      {badges.length > 0 && (
+        <div className="mt-4 flex flex-wrap gap-2">
+          <BadgeChips badges={badges} />
+        </div>
+      )}
       {p.bio && <p className="mt-6 max-w-xl leading-relaxed">{p.bio}</p>}
       <div className="mt-5 flex flex-wrap items-center gap-3 text-sm text-mist">
         {viewerId && !own && <ToggleButton what="follow_user" id={p.id} on={follow.following} back={path} label="Follow" onLabel="Following" />}
@@ -67,6 +78,25 @@ export default async function PublicProfile({ params }: Props) {
         <ShareButton path={path} title={`${p.display_name} on Wanana`} />
         {viewerId && !own && <ReportButton targetType="profile" targetId={p.id} />}
       </div>
+      {isAdmin && (
+        <div className="mt-6 flex flex-wrap gap-2 rounded-xl border border-dashed border-line p-3 text-sm">
+          <span className="text-gold">Admin</span>
+          {(["voice", "founding_fan"] as BadgeKey[]).map((b) => {
+            const has = badges.includes(b);
+            return (
+              <form key={b} action={setBadgeAction}>
+                <input type="hidden" name="user_id" value={p.id} />
+                <input type="hidden" name="handle" value={p.handle} />
+                <input type="hidden" name="badge" value={b} />
+                <input type="hidden" name="on" value={has ? "0" : "1"} />
+                <button type="submit" className="btn-quiet px-3 py-1.5">
+                  {has ? `Remove ${BADGE_INFO[b].label}` : `Grant ${BADGE_INFO[b].label}`}
+                </button>
+              </form>
+            );
+          })}
+        </div>
+      )}
       <EarlyEarBadges userId={p.id} own={own} />
       <ProfileActivity authorId={p.id} viewerId={viewerId} path={path} own={own} />
     </PageShell>

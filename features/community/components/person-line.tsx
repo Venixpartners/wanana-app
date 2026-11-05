@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Avatar } from "@/features/profile/components/avatar";
 import { timeAgo } from "@/lib/text";
 import type { Person } from "../people";
+import { BadgeChips } from "@/features/badges/components/badge-chips";
 
 export function PersonLine({ person, at, size = 28 }: { person?: Person; at?: string; size?: number }) {
   if (!person) return <span className="text-sm text-mist">A former member{at ? `, ${timeAgo(at)}` : ""}</span>;
@@ -15,6 +16,7 @@ export function PersonLine({ person, at, size = 28 }: { person?: Person; at?: st
         @{person.handle}
         {at ? `, ${timeAgo(at)}` : ""}
       </span>
+      <BadgeChips badges={person.badges} compact />
     </span>
   );
 }
