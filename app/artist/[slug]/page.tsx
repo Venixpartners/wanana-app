@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!data) return { title: "Artist not found" };
   const { artist } = data;
   const description = artist.summary ?? `What fans think of ${artist.name}: ratings, reviews and conversation on Wanana.`;
-  return { title: artist.name, description, alternates: { canonical: `/artist/${artist.slug}` }, openGraph: { title: artist.name, description } };
+  return { title: artist.name, description, alternates: { canonical: `/artist/${artist.slug}` }, openGraph: { title: artist.name, description, url: `/artist/${artist.slug}` } };
 }
 
 export default async function ArtistPage({ params }: Props) {

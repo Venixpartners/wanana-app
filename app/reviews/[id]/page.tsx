@@ -23,7 +23,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!data) return { title: "Review not found" };
   const r = data.review;
   const title = `${r.rating}/10 for ${r.subject?.name ?? "a release"}${r.author ? ` by @${r.author.handle}` : ""}`;
-  return { title, description: (r.body ?? r.title ?? "").slice(0, 160) };
+  const description = (r.body ?? r.title ?? "").slice(0, 160);
+  return { title, description, openGraph: { title, description, url: `/reviews/${r.id}` } };
 }
 
 export default async function ReviewPage({ params }: Props) {

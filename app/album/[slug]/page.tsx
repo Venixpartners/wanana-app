@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { release, artist } = data;
   const title = `${release.title} by ${artist.name}`;
   const description = `${KIND_LABEL[release.kind]} by ${artist.name}. See what fans think, track by track, on Wanana.`;
-  return { title, description, alternates: { canonical: `/album/${release.slug}` }, openGraph: { title, description } };
+  return { title, description, alternates: { canonical: `/album/${release.slug}` }, openGraph: { title, description, url: `/album/${release.slug}` } };
 }
 
 export default async function ReleasePage({ params }: Props) {
