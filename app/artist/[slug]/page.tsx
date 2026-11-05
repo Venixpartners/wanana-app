@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageShell } from "@/components/page-shell";
@@ -51,6 +52,9 @@ export default async function ArtistPage({ params }: Props) {
               ) : null}
               <span className="text-sm text-mist">{plural(follow.followers, "follower")}</span>
               <ShareButton path={path} title={`${artist.name} on Wanana`} />
+              <Link href={`${path}/kit`} className="text-sm text-mist underline underline-offset-4 hover:text-paper">
+                Fan kit for the artist&apos;s team
+              </Link>
             </div>
           </div>
         </header>

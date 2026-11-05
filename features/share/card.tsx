@@ -171,3 +171,37 @@ export const FALLBACK_CARD: CardData = {
   cta: "Join the conversation on",
   art: 0,
 };
+
+export type BadgeData = { name: string; sub?: string; pulse: number | null; average: number | null; ratings: number; home: number | null; diaspora: number | null };
+
+/** A live score badge, 1200 by 480, for Instagram posts, press kits and blogs. */
+export async function renderBadge(d: BadgeData) {
+  const width = 1200;
+  const height = 480;
+  const element = (
+    <div style={{ display: "flex", width, height, background: C.midnight, padding: 56, fontFamily: "Inter", color: C.paper, border: `4px solid ${C.line}` }}>
+      <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", width: 300, borderRight: `2px solid ${C.line}`, marginRight: 52 }}>
+        <span style={{ fontFamily: "Sora", fontSize: 150, lineHeight: 1, color: C.paper }}>{d.pulse ?? "New"}</span>
+        <span style={{ fontSize: 26, color: C.gold, marginTop: 10, letterSpacing: 3, textTransform: "uppercase", fontWeight: 500 }}>Fan Pulse</span>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: 0, justifyContent: "space-between" }}>
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <span style={{ fontFamily: "Sora", fontSize: d.name.length > 26 ? 46 : 58, lineHeight: 1.1, color: C.paper }}>{clip(d.name, 44)}</span>
+          {d.sub && <span style={{ fontSize: 28, color: C.mist, marginTop: 8 }}>{clip(d.sub, 50)}</span>}
+          <span style={{ fontSize: 26, color: C.mist, marginTop: 18 }}>
+            {d.average !== null ? `${d.average.toFixed(1)} out of 10 from ${d.ratings.toLocaleString("en-GB")} fan ${d.ratings === 1 ? "score" : "scores"}` : "Be the first to score it"}
+          </span>
+        </div>
+        <div style={{ display: "flex", gap: 32 }}>
+          <Bar label="Home" value={d.home} color={C.bright} scale={1} />
+          <Bar label="Diaspora" value={d.diaspora} color={C.orange} scale={1} />
+        </div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <Logo height={34} />
+          <span style={{ fontSize: 24, color: C.bright }}>wanana.africa</span>
+        </div>
+      </div>
+    </div>
+  );
+  return new ImageResponse(element, { width, height, fonts: await loadFonts(), headers: { "Cache-Control": "public, max-age=900, s-maxage=900" } });
+}

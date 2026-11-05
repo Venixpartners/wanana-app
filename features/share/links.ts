@@ -1,7 +1,7 @@
 export const SHARE_CHANNELS = ["whatsapp", "x", "facebook", "instagram", "tiktok", "copy", "native", "image"] as const;
 export type ShareChannel = (typeof SHARE_CHANNELS)[number];
 
-export const SHARE_KINDS = ["song", "album", "artist", "poll", "ranking", "review", "chart", "profile"] as const;
+export const SHARE_KINDS = ["song", "album", "artist", "poll", "ranking", "review", "chart", "profile", "versus", "verdict"] as const;
 export type ShareKind = (typeof SHARE_KINDS)[number];
 
 const PREFIX: [string, ShareKind][] = [
@@ -12,6 +12,8 @@ const PREFIX: [string, ShareKind][] = [
   ["/rankings/", "ranking"],
   ["/reviews/", "review"],
   ["/charts", "chart"],
+  ["/versus/", "versus"],
+  ["/verdict", "verdict"],
   ["/u/", "profile"],
 ];
 
@@ -59,5 +61,6 @@ export function channelUrl(channel: ShareChannel, url: string, text: string): st
 export function storyCardPath(path: string): string | null {
   const kind = shareKindOf(path);
   if (!kind || kind === "profile") return null;
-  return `/card${path.split("?")[0]}`;
+  const clean = path.split("?")[0];
+  return clean === "/verdict" ? "/card/verdict/latest" : `/card${clean}`;
 }
