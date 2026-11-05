@@ -11,6 +11,7 @@ const LINKS = [
   { href: "/community", label: "Community" },
   { href: "/polls", label: "Polls" },
   { href: "/rankings", label: "Rankings" },
+  { href: "/ai", label: "Ask Wanana" },
 ];
 
 function isActive(pathname: string, href: string) {
